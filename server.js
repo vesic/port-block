@@ -14,7 +14,6 @@ app.get('/', function (req, res) {
 
 app.get('/bind/:port', (req, res) => {
   const port = req.params.port;
-  console.log('bind', port);
   let proc = spawn('node', ['./port-tcp.js', port])
 
   proc.stdout.on('data', (data) => {
@@ -31,8 +30,6 @@ app.get('/bind/:port', (req, res) => {
 
 app.get('/kill-tcp/:port', (req, res) => {
   const port = req.params.port;
-  console.log('port', port)
-  console.log(Object.keys(tcpPorts))
   if (tcpPorts[port]) {
     console.log('OK IN')
     tcpPorts[port].kill('SIGKILL')
@@ -46,16 +43,15 @@ app.get('/kill-tcp/:port', (req, res) => {
       msg: `Port ${port} not in use`
     })
   }
-  console.log(Object.keys(tcpPorts))
 })
 
 app.get('/bind-udp/:port', (req, res) => {
   const port = req.params.port;
   let proc = spawn('node', ['./port-udp.js', port])
-
   proc.stdout.on('data', (data) => {
-    udpPorts[port] = proc
-    // console.log(Object.keys(udpPorts))
+    if (!data.toString().startsWith('error')) {
+      udpPorts[port] = proc
+    }
     res.send({
       data: data.toString().trim(),
       ports: Object.keys(udpPorts).length
@@ -66,18 +62,33 @@ app.get('/bind-udp/:port', (req, res) => {
 
 app.get('/kill-udp/:port', (req, res) => {
   const port = req.params.port;
-
   if (udpPorts[port]) {
     udpPorts[port].kill('SIGKILL')
     delete udpPorts[port]
     res.send({ 
-      msg: `port ${port} closed`,
+      data: `UDP ${port} closed`,
       ports: Object.keys(tcpPorts).length
    })
+  } else {
+    res.send({
+      msg: `Port ${port} not in use`
+    })
   }
+})
 
+app.get('/kill-all', (req, res) => {
+  Object.keys(tcpPorts)
+    .forEach(key => {
+      tcpPorts[key].kill('SIGKILL')
+    })
+  Object.keys(udpPorts)
+    .forEach(key => {
+      udpPorts[key].kill('SIGKILL')
+    })
+  tcpPorts = {}
+  udpPorts = {}
   res.send({
-    msg: `Port ${port} not in use`
+    data: 'All ports closed'
   })
 })
 

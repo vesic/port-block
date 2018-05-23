@@ -4,7 +4,6 @@ import Range from './Range';
 import Info from './Info';
 import './App.css';
 
-
 class App extends Component {
   state = {
     logs: [],
@@ -16,7 +15,6 @@ class App extends Component {
   }
 
   sortOut = (arr) => {
-    console.log('arr', arr)
     const { logs, ports } = this.state;    
     if (arr[0] !== 'error') {
       this.setState({
@@ -72,22 +70,11 @@ class App extends Component {
     })
   }
 
-
-  onChange(checked) {
-    console.log(`switch to ${checked}`);
-  }
-
   onDelete = (port) => {
-    console.log('port', port)
     const { number, protocol } = port;
-    if (protocol === 'TCP') {
-      this.killTCP(number)
-    }
-    // console.log('On delete', portNumber)
-    // const arr = res.data.split(' ')
-    // if (arr[0] === 'TCP') {
-    //   this.killTCP(arr[1])
-    // }
+    (protocol === 'TCP') 
+      ? this.killTCP(number) 
+      : this.killUDP(number);
   }
 
   killTCP = (portNumber) => {
@@ -104,6 +91,36 @@ class App extends Component {
           }, ...logs],
           ports: ports.filter(port => (port.number != portNumber || port.protocol != 'TCP'))
         });
+      })
+  }
+
+  killUDP = (portNumber) => {
+    const { logs, ports } = this.state;    
+    fetch('/kill-udp/' + portNumber)
+      .then(res => res.json())
+      .then(res => {
+        this.setState({
+          logs: [{
+            text: res.data,
+            status: 'success'
+          }, ...logs],
+          ports: ports.filter(port => (port.number != portNumber || port.protocol != 'UDP'))
+        });
+      })
+  }
+
+  onCloseAll = () => {
+    const { logs, ports } = this.state;
+    fetch('/kill-all')
+      .then(res => res.json())
+      .then(res => {
+        this.setState({
+          logs: [{
+            text: res.data,
+            status: 'success'
+          }, ...logs],
+          ports: []
+        })
       })
   }
 
@@ -134,8 +151,13 @@ class App extends Component {
               {(this.state.displayRange) ? <Range /> : <Single onSubmit={this.bindPort}/>}
             </div>
           </div>
-          <div>&nbsp;</div>
-          <Info logs={logs} ports={ports} onDelete={this.onDelete}/>
+          <hr />
+          <Info logs={logs} 
+            ports={ports} 
+            onDelete={this.onDelete}
+            clearLog={() => this.setState({ logs: []})}
+            closeAll={this.onCloseAll}
+          />
         </div>
       </div>
     );
