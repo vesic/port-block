@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 
-class Port extends Component {
+class Info extends Component {
   state = {}
 
   render() {
     return (
-      <h1>Port</h1>
+      <div>Info</div>
     )
   }
 }
 
-export default Port;
+export default Info;

@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
-import Port from './Port';
-import PortRange from './PortRange';
+import Single from './Single';
+import Range from './Range';
+import Info from './Info';
 import './App.css';
 
 
 class App extends Component {
   state = {
     ports: [],
-    portRange: false
+    displayRange: false
   }
 
   componentDidMount() {
@@ -44,20 +45,29 @@ class App extends Component {
     return (
       <div>
         <nav class="navbar navbar-light bg-light">
-          <span class="navbar-brand mb-0 h1">Navbar</span>
+          <span class="navbar-brand mb-0 h1">Port Block</span>
         </nav>
         <div className="container">
           <div className="row">
             <div className="col-sm">
-              <button type="button" onClick={() => this.setState({ portRange: false })} className="btn btn-primary btn-sm">Small button</button>
-              <button type="button" onClick={() => this.setState({ portRange: true })} className="btn btn-secondary btn-sm">Small button</button>
+              <div>&nbsp;</div>
+              <ul className="nav nav-tabs">
+                <li className="nav-item">
+                  <a onClick={() => this.setState({ displayRange: false })} className={'nav-link'} href="#">Single</a>
+                </li>
+                <li className="nav-item">
+                  <a onClick={() => this.setState({ displayRange: true })} className="nav-link" href="#">Range</a>
+                </li>
+              </ul>
             </div>
           </div>
           <div className="row">
             <div className="col-sm">
-              { (this.state.portRange) ? <PortRange /> : <Port /> }
+              <div>&nbsp;</div>
+              {(this.state.displayRange) ? <Range /> : <Single />}
             </div>
           </div>
+          <Info />
         </div>
       </div>
     );
