@@ -6,13 +6,14 @@ class Info extends Component {
   state = {}
 
   render() {
+    const { logs, ports, onDelete } = this.props;
     return (
       <div className="row">
         <div className="col">
-          <Log logs={this.props.logs}/>
+          <Log logs={logs}/>
         </div>
         <div className="col-9">
-          <Table />
+          <Table ports={ports} onDelete={onDelete}/>
         </div>
       </div>
     )

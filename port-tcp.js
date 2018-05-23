@@ -4,7 +4,8 @@ const port = process.argv[2]
 
 net.createServer(() => { })
   .on('error', (err) => {
-    console.log('error tcp-port in use ', port)
+    console.log(`error TCP ${port} in use`)
+    throw err;
   }).listen(port, () => {
-    console.log('tcp-port open on ', port)
+    console.log(`TCP ${port} open`)
   })
