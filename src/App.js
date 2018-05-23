@@ -12,6 +12,13 @@ class App extends Component {
   }
 
   componentDidMount() {
+    fetch('/all-ports')
+      .then(res => res.json())
+      .then(res => {
+        this.setState({
+          ports: res.ports
+        })
+      })
   }
 
   sortOut = (arr) => {
@@ -58,18 +65,6 @@ class App extends Component {
     (udp) ? this.bindUDP(port) : this.bindTCP(port);
   }
   
-
-  bindTcpRange = () => {
-    [5000, 5001, 5002, 5003, 5004, 5005].forEach(port => {
-      fetch('/bind/' + port)
-        .then(res => res.json())
-        .then(res => {
-          console.log('res', res)
-          this.setState({ports: [...this.state.logs, res]})
-        })
-    })
-  }
-
   onDelete = (port) => {
     const { number, protocol } = port;
     (protocol === 'TCP') 
@@ -82,8 +77,6 @@ class App extends Component {
     fetch('/kill-tcp/' + portNumber)
       .then(res => res.json())
       .then(res => {
-        console.log('res:del', res)
-        console.log('ports', ports)
         this.setState({
           logs: [{
             text: res.data,
@@ -124,6 +117,18 @@ class App extends Component {
       })
   }
 
+  bindRange = (from, to, udp) => {
+    if (!udp) {
+      for (let i = from; i <= to; i++) {
+        this.bindTCP(i);
+      }
+    } else {
+      for (let i = from; i <= to; i++) {
+        this.bindUDP(i);
+      }
+    }
+  }
+
   render() {
     const { logs, ports } = this.state;
     return (
@@ -148,7 +153,7 @@ class App extends Component {
           <div className="row">
             <div className="col-sm">
               <div>&nbsp;</div>
-              {(this.state.displayRange) ? <Range /> : <Single onSubmit={this.bindPort}/>}
+              {(this.state.displayRange) ? <Range onSubmit={this.bindRange} /> : <Single onSubmit={this.bindPort}/>}
             </div>
           </div>
           <hr />

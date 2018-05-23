@@ -4,6 +4,7 @@ const { spawn } = require('child_process');
 
 let tcpPorts = {}
 let udpPorts = {}
+let ports = []
 
 // app.use(express.static('public'))
 app.use(express.static('build'))
@@ -12,6 +13,11 @@ app.get('/', function (req, res) {
   res.sendFile(path.join(__dirname + 'build/index.html'));
 });
 
+
+app.get('/all-ports', (req, res) => {
+  res.send({ ports })
+})
+
 app.get('/bind/:port', (req, res) => {
   const port = req.params.port;
   let proc = spawn('node', ['./port-tcp.js', port])
@@ -19,6 +25,12 @@ app.get('/bind/:port', (req, res) => {
   proc.stdout.on('data', (data) => {
     if (!data.toString().startsWith('error')) {
       tcpPorts[port] = proc
+      const arr = data.toString().split(' ')
+      ports.push({
+        number: arr[1],
+        protocol: arr[0],
+        time: Date.now()
+      })
     }
     res.send({ 
       data: data.toString().trim(),
@@ -31,9 +43,9 @@ app.get('/bind/:port', (req, res) => {
 app.get('/kill-tcp/:port', (req, res) => {
   const port = req.params.port;
   if (tcpPorts[port]) {
-    console.log('OK IN')
     tcpPorts[port].kill('SIGKILL')
     delete tcpPorts[port]
+    ports = ports.filter(p => p.number != port || p.protocol != 'TCP')
     res.send({ 
       data: `TCP ${port} closed`,
       ports: Object.keys(tcpPorts).length
@@ -51,6 +63,12 @@ app.get('/bind-udp/:port', (req, res) => {
   proc.stdout.on('data', (data) => {
     if (!data.toString().startsWith('error')) {
       udpPorts[port] = proc
+      const arr = data.toString().split(' ')
+      ports.push({
+        number: arr[1],
+        protocol: arr[0],
+        time: Date.now()
+      })
     }
     res.send({
       data: data.toString().trim(),
@@ -65,6 +83,7 @@ app.get('/kill-udp/:port', (req, res) => {
   if (udpPorts[port]) {
     udpPorts[port].kill('SIGKILL')
     delete udpPorts[port]
+    ports = ports.filter(p => p.number != port || p.protocol != 'UDP')    
     res.send({ 
       data: `UDP ${port} closed`,
       ports: Object.keys(tcpPorts).length
@@ -87,6 +106,7 @@ app.get('/kill-all', (req, res) => {
     })
   tcpPorts = {}
   udpPorts = {}
+  ports = []
   res.send({
     data: 'All ports closed'
   })

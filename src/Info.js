@@ -10,10 +10,10 @@ class Info extends Component {
     return (
       <div className="row">
         <div className="col">
-          <Log logs={logs} clearLog={clearLog}/>
+          <Log logs={logs} clearLog={clearLog} />
         </div>
-        <div className="col-9">
-          <Table ports={ports} onDelete={onDelete} closeAll={closeAll}/>
+        <div className="col-8">
+          <Table ports={ports} onDelete={onDelete} closeAll={closeAll} />
         </div>
       </div>
     )
