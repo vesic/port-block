@@ -7,7 +7,9 @@ import './App.css';
 
 class App extends Component {
   state = {
-    ports: [],
+    logs: [
+      'foo'
+    ],
     displayRange: false
   }
 
@@ -15,13 +17,13 @@ class App extends Component {
   }
 
 
-  bindTcp = (e, port) => {
-    // console.log('port', this.inputTcp.value)
-    fetch('/bind/' + this.inputTcp.value)
+  bindTcp = (port, udp) => {
+    console.log('port', port, udp)
+    fetch('/bind/' + port)
       .then(res => res.json())
       .then(res => {
         console.log('res', res)
-        this.setState({ports: [...this.state.ports, res]})
+        this.setState({ports: [...this.state.logs, res.data]})
       })
   }
 
@@ -31,7 +33,7 @@ class App extends Component {
         .then(res => res.json())
         .then(res => {
           console.log('res', res)
-          this.setState({ports: [...this.state.ports, res]})
+          this.setState({ports: [...this.state.logs, res]})
         })
     })
   }
@@ -44,8 +46,8 @@ class App extends Component {
   render() {
     return (
       <div>
-        <nav class="navbar navbar-light bg-light">
-          <span class="navbar-brand mb-0 h1">Port Block</span>
+        <nav className="navbar navbar-light bg-light">
+          <span className="navbar-brand mb-0 h1">Port Block</span>
         </nav>
         <div className="container">
           <div className="row">
@@ -64,10 +66,11 @@ class App extends Component {
           <div className="row">
             <div className="col-sm">
               <div>&nbsp;</div>
-              {(this.state.displayRange) ? <Range /> : <Single />}
+              {(this.state.displayRange) ? <Range /> : <Single onSubmit={this.bindTcp}/>}
             </div>
           </div>
-          <Info />
+          <div>&nbsp;</div>
+          <Info logs={this.state.logs}/>
         </div>
       </div>
     );
