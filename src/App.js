@@ -82,7 +82,7 @@ class App extends Component {
             text: res.data,
             status: 'success'
           }, ...logs],
-          ports: ports.filter(port => (port.number != portNumber || port.protocol != 'TCP'))
+          ports: ports.filter(port => (port.number !== portNumber || port.protocol !== 'TCP'))
         });
       })
   }
@@ -97,13 +97,13 @@ class App extends Component {
             text: res.data,
             status: 'success'
           }, ...logs],
-          ports: ports.filter(port => (port.number != portNumber || port.protocol != 'UDP'))
+          ports: ports.filter(port => (port.number !== portNumber || port.protocol !== 'UDP'))
         });
       })
   }
 
   onCloseAll = () => {
-    const { logs, ports } = this.state;
+    const { logs } = this.state;
     fetch('/kill-all')
       .then(res => res.json())
       .then(res => {
@@ -130,11 +130,11 @@ class App extends Component {
   }
 
   render() {
-    const { logs, ports } = this.state;
+    const { logs, ports, displayRange } = this.state;
     return (
       <div>
         <nav className="navbar navbar-light bg-light">
-          <span className="navbar-brand mb-0 h1">Port Block</span>
+          <span className="navbar-brand mb-0 h1">PortBlock</span>
         </nav>
         <div className="container">
           <div className="row">
@@ -142,10 +142,10 @@ class App extends Component {
               <div>&nbsp;</div>
               <ul className="nav nav-tabs">
                 <li className="nav-item">
-                  <a onClick={() => this.setState({ displayRange: false })} className={'nav-link'} href="#">Single</a>
+                  <a onClick={() => this.setState({ displayRange: false })} className={'nav-link ' + (!displayRange ? 'active': '')} href={null}>Single</a>
                 </li>
                 <li className="nav-item">
-                  <a onClick={() => this.setState({ displayRange: true })} className="nav-link" href="#">Range</a>
+                  <a onClick={() => this.setState({ displayRange: true })} className={'nav-link ' + (displayRange ? 'active': '')} href={null}>Range</a>
                 </li>
               </ul>
             </div>

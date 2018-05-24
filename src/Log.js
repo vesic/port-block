@@ -18,7 +18,7 @@ class Log extends Component {
             </div>
           </div>
           <ul style={{ marginTop: 15 }} className="list-group list-group-flush">
-            <li className="list-group-item">No logs...</li>
+            <li className="list-group-item"><div>No logs...</div></li>
           </ul>
         </div>
       )

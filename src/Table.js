@@ -11,11 +11,11 @@ class Table extends Component {
       <div>
         <div className="row">
           <div className="col">
-            <h5>Table</h5>
+            <h5>Process Table</h5>
           </div>
           <div className="col">
             <button onClick={closeAll} 
-              className="btn btn-sm bt-default">Close All</button>
+              className="btn btn-sm bt-default">Kill All</button>
           </div>
         </div>
         <table style={{ marginTop: 15 }} className="table table-sm table-dark table-bordered">
@@ -25,7 +25,6 @@ class Table extends Component {
               <th scope="col">Protocol</th>
               <th scope="col">Time</th>
               <th>Action</th>
-              {/* <th scope="col">Handle</th> */}
             </tr>
           </thead>
           <tbody>
